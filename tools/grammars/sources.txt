@@ -1,0 +1,33 @@
+# The grammars that are packed for codn, one a line: where each lies under
+# assets/syntaxes in the checkout that fetch.sh makes. Where they come
+# from, at which commit and under which license is in
+# assets/syntax/SOURCES.md, which is to be changed with this list.
+#
+# Languages that files are in, by what was counted in a set of
+# projects on 2026-10-07:
+01_Packages/JSON/JSON.sublime-syntax
+01_Packages/Python/Python.sublime-syntax
+02_Extra/TypeScript.sublime-syntax
+02_Extra/TypsecriptReact.sublime-syntax
+01_Packages/Markdown/Markdown.sublime-syntax
+01_Packages/JavaScript/JavaScript.sublime-syntax
+01_Packages/HTML/HTML.sublime-syntax
+01_Packages/CSS/CSS.sublime-syntax
+01_Packages/C++/C++.sublime-syntax
+01_Packages/C++/C.sublime-syntax
+01_Packages/Rust/Rust.sublime-syntax
+01_Packages/YAML/YAML.sublime-syntax
+01_Packages/ShellScript/Bash.sublime-syntax
+01_Packages/XML/XML.sublime-syntax
+02_Extra/TOML/TOML.sublime-syntax
+02_Extra/QML.sublime-syntax
+01_Packages/SQL/SQL.sublime-syntax
+01_Packages/Diff/Diff.sublime-syntax
+01_Packages/Makefile/Makefile.sublime-syntax
+# What those use and no file is in: the patterns inside a pattern of
+# Python and of JavaScript, and what the grammar of the shell is made of.
+01_Packages/Python/Regular Expressions (Python).sublime-syntax
+01_Packages/JavaScript/Regular Expressions (JavaScript).sublime-syntax
+01_Packages/Regular Expressions/RegExp.sublime-syntax
+01_Packages/ShellScript/commands-builtin-shell-bash.sublime-syntax
+01_Packages/ShellScript/Shell-Unix-Generic.sublime-syntax

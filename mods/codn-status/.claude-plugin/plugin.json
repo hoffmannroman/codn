@@ -1,0 +1,7 @@
+{
+  "name": "codn-status",
+  "version": "0.1.0",
+  "description": "Tells codn what a Claude Code session knows of itself: its model and effort, how full its context is, how fast the model answered last, how much of the limits is used and when they reset, and in a few words what each of its agents is doing, such as the name of a file it reads or what it searches for. It writes that to the file codn names in CODN_STATUS, and nothing outside codn.",
+  "author": { "name": "Roman Hoffmann" },
+  "license": "MIT OR Apache-2.0"
+}

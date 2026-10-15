@@ -1,0 +1,8 @@
+/target
+# The build of the program beside the build, where it is not sent elsewhere.
+/tools/*/target
+# What Claude Code lays beside a plugin it loads: its types and how to check against them.
+/mods/*/tsconfig.json
+/mods/*/.claude-plugin/types/
+# What Python lays beside the reporter for Codex when its tests import it.
+__pycache__/

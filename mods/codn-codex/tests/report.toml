@@ -1,0 +1,12 @@
+model = "gpt-6.1-sol"
+options = ["high"]
+tokens = 21382
+window = 760000
+
+[limits."5h"]
+used = 33
+resets = 1791310998
+
+[limits."7d"]
+used = 18
+resets = 1791833854

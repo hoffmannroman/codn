@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=codn
+GenericName=Workspace for terminal coding agents
+Comment=Projects and the agent sessions running in them
+Exec=codn
+Icon=codn
+Terminal=false
+Categories=Development;
+StartupWMClass=codn
+StartupNotify=true

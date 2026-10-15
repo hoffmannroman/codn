@@ -1,0 +1,60 @@
+[package]
+name = "codn"
+version = "0.3.0"
+edition = "2024"
+description = "A minimal, fast workspace for terminal coding agents"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/hoffmannroman/codn"
+
+[dependencies]
+alacritty_terminal = "0.26"
+winit = { version = "0.30", default-features = false, features = ["rwh_06", "x11", "wayland", "wayland-dlopen"] }
+glutin = { version = "0.32", default-features = false, features = ["egl", "glx", "x11", "wayland"] }
+glutin-winit = { version = "0.5", default-features = false, features = ["egl", "glx", "x11", "wayland"] }
+glow = "0.16"
+raw-window-handle = "0.6"
+swash = "0.2"
+copypasta = { version = "0.10", default-features = false, features = ["x11", "wayland"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.9"
+libc = "0.2"
+unicode-width = "0.2"
+# The grammars for the colors of syntax are read by this crate, the
+# first exception to "no further foreign code", with these features and
+# no others: its patterns then run in an engine written in Rust. It runs
+# in a process of its own and is imported only in src/syntax.
+syntect = { version = "=5.3.0", default-features = false, features = ["parsing", "regex-fancy"] }
+# Markdown is read by this crate, the second exception: with no feature
+# of it, so without its output as HTML, its command line and its one
+# `unsafe`. It runs in the process for the colors and is imported only
+# in src/syntax.
+pulldown-cmark = { version = "=0.13.4", default-features = false }
+# Deflate with its frame of zlib, for PNG. It is in the build already,
+# through swash, and is named here to be called. For the pictures of a
+# project it is called in src/picture only, which runs in a process of
+# its own.
+yazi = "=0.2.1"
+
+[patch.crates-io]
+alacritty_terminal = { path = "vendor/alacritty_terminal" }
+smithay-clipboard = { path = "vendor/smithay-clipboard" }
+x11-clipboard = { path = "vendor/x11-clipboard" }
+vte = { path = "vendor/vte" }
+
+# The tests compile every pattern of every grammar. Unoptimized that
+# takes thirteen seconds, so what compiles patterns is optimized in the
+# build of the tests too.
+[profile.dev.package]
+syntect.opt-level = 3
+fancy-regex.opt-level = 3
+regex-automata.opt-level = 3
+regex-syntax.opt-level = 3
+aho-corasick.opt-level = 3
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
