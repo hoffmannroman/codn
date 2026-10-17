@@ -1,0 +1,8 @@
+model = "big-pickle"
+options = ["build"]
+tokens = 1900
+window = 200000
+speed = 50
+
+[agents]
+"ses_0a1b2c3d4e60NoPqRsTuVwXyZa" = "Read HEAD"

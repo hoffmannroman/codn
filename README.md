@@ -7,7 +7,7 @@
 
 **A native Linux app for running terminal coding agents.**
 
-Claude Code, Codex and a plain shell, each in a real terminal of its own,
+Claude Code, Codex, opencode and a plain shell, each in a real terminal of its own,
 grouped by project in a sidebar. Each session carries a mark that says
 whether it is working, waiting for you or done. Beside it: what changed in
 the project, or one of its files.
@@ -21,14 +21,14 @@ what it is doing, what it runs with and which agents it sent off.
 
 A session is the agent's own command line program, unmodified, on a
 terminal. codn talks to no model API and never sees a token: you log in to
-`claude` or `codex` as you always do, and your subscription works as it
-does in any other terminal. Any other CLI is a few lines of configuration.
+`claude`, `codex` or `opencode` as you always do, and your subscription works
+as it does in any other terminal. Any other CLI is a few lines of configuration.
 
 ## What it does
 
 - **Projects and sessions** in a sidebar, restored after a restart. Claude
-  Code continues its conversation, and so does a Codex conversation chosen
-  from the history.
+  Code continues its conversation, and so does opencode with its plugin, and
+  a Codex conversation chosen from the history.
 - **What every session is doing**, as a mark of its own shape: at rest,
   working, waiting for you, done, failed. A desktop notification says when
   a session you are not looking at needs you, and what for.
@@ -144,7 +144,7 @@ grammars under `assets/syntax/`: `SOURCES.md` there names each.
 
 ## Trademarks
 
-codn is not affiliated with, endorsed by or sponsored by Anthropic or
-OpenAI. Claude and Claude Code are trademarks of Anthropic, and OpenAI and
+codn is not affiliated with, endorsed by or sponsored by Anthropic, OpenAI
+or the makers of opencode. Claude and Claude Code are trademarks of Anthropic, and OpenAI and
 Codex are trademarks of OpenAI. codn names them only to say which program
-a session runs, and shows no logo of either.
+a session runs, and shows no logo of any of them.

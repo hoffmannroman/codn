@@ -9,6 +9,7 @@ use super::{App, FILESYSTEM, UserEvent};
 use crate::core::config::{Chosen, expand};
 use crate::core::discover::{self, Row};
 use crate::core::history::{self, Conversation};
+use crate::core::shell;
 use crate::core::{ProjectId, spawn_bounded};
 use crate::ui::picker::{Known, Launch, Outcome, Picker, Starter};
 
@@ -81,8 +82,16 @@ impl App {
         self.history_request = self.history_request.wrapping_add(1);
         let request = self.history_request;
         let installed = self.cfg.agents.iter().filter(|agent| agent.installed);
-        let agents: Vec<_> =
-            installed.filter_map(|agent| Some((agent.name.clone(), agent.resumable()?.clone()))).collect();
+        // A history that is asked of the agent's program runs it as its
+        // sessions are run: on the search path they get.
+        let path = shell::search_path(self.cfg.path.as_deref());
+        let agents: Vec<_> = installed
+            .filter_map(|agent| {
+                let mut history = agent.resumable()?.clone();
+                history.program = Some((agent.cmd.clone().into(), path.clone()));
+                Some((agent.name.clone(), history))
+            })
+            .collect();
         let launch = Launch { project, starters, found: None, setting: None, all: false };
         self.ui.picker = Some(Picker { launch: Some(launch), ..Picker::default() });
         self.with_picker(|picker, known| picker.refresh(known));

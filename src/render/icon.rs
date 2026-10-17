@@ -625,14 +625,20 @@ mod tests {
 
     #[test]
     fn no_agent_is_shown_by_the_logo_of_its_maker() {
-        // The makers of Claude Code and Codex did not give their logos to
-        // codn: no name leads to one, and the agents that are built in
-        // are told by a drawing of Codicons and their name.
-        for maker in ["claude", "openai", "anthropic", "codex"] {
+        // The makers of the agents did not give their logos to codn: no
+        // name leads to one, and the agents that are built in are told by
+        // a drawing of Codicons and their name.
+        for maker in ["claude", "openai", "anthropic", "codex", "opencode"] {
             assert_eq!(Icon::named(maker), None, "{maker}");
         }
         let defaults = crate::core::config::Config::default();
-        for (agent, icon) in [("claude", Icon::Agent), ("codex", Icon::Agent), ("shell", Icon::Terminal)] {
+        let built_in = [
+            ("claude", Icon::Agent),
+            ("codex", Icon::Agent),
+            ("opencode", Icon::Agent),
+            ("shell", Icon::Terminal),
+        ];
+        for (agent, icon) in built_in {
             let named = defaults.agent(agent).unwrap().icon.as_deref().and_then(Icon::named);
             assert_eq!(named, Some(icon), "{agent}");
         }

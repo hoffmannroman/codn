@@ -59,13 +59,14 @@ check when it is done, until you looked, and a red triangle when it says it
 failed. The notification says what it waits for. Claude Code speaks the
 protocol from 2.1.295 on, to a terminal that answers its question, which
 codn does. It does not while `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` is set.
+opencode speaks it through its plugin for codn, below.
 
 What a program says it runs beside itself has rows below its session,
 each with an arrow that leads to it from what it hangs on: the agents a
-session of Claude Code sends off, each with the mark of its state and
-the few words it was sent off with, or what it is doing now where the
-program says so in the file below (`agents`), which the plugin for
-Claude Code does. Such a row goes when its agent has ended, and a click
+session of Claude Code or of opencode sends off, each with the mark of
+its state and the few words it was sent off with, or what it is doing now
+where the program says so in the file below (`agents`), which both
+plugins do. Such a row goes when its agent has ended, and a click
 on one opens the session. Eight of them are shown, and a last row says
 how many more there are. In the protocol these are the records that have
 an `id`, so any program can have such rows. Codex says nothing of its
@@ -219,15 +220,50 @@ see an answer arrive.
 - A `notify` of your own in `~/.codex/config.toml` does not run in the
   sessions codn starts this way: the argument takes its place.
 
+opencode writes the file through its plugin in `mods/codn-opencode`, which
+also tells codn the state of the session and of the agents it sends off,
+and which conversation the session is in. codn does not load it for you:
+name the folder among the plugins of opencode's terminal interface, in
+`~/.config/opencode/cli.json`:
+
+```json
+{ "plugins": ["/path/to/codn-app/mods/codn-opencode"] }
+```
+
+It reports the model, the agent of opencode the session runs as (`build`,
+`plan`) and the variant of the model where one was chosen, what the
+context held at the last call of the model and how many tokens the model
+takes, and the speed of the last answer, from its first piece to its
+last, which leaves out the time a tool it called ran. opencode shows a
+speed of its own, reckoned another way. It reports no limits: opencode
+has none to tell.
+
+- What it reports is of the conversation the window of opencode shows. One
+  that is resumed is reported from what opencode kept of it, before the
+  next turn.
+- The rows below the session are the agents opencode sends off, each from
+  its start to its end, with the words it was sent off with, and what it
+  does: the last tool it called, in a few words made of the call. A
+  command itself is never written, only the words the model wrote of it.
+- The state is said to a terminal that answers the question of the
+  protocol, as codn does: at work, waiting for a permission or for an
+  answer to a question, done, failed or stopped.
+- It writes the id of the conversation in
+  `~/.local/state/codn-opencode/<process id>.json`, where codn reads it, so
+  that a session of opencode continues its conversation after a restart.
+  Without the plugin it starts a new one.
+- Outside codn the variable is not set and the plugin does nothing.
+
 Closing codn ends the running programs: HUP, then TERM after two seconds,
 then KILL after another two seconds for processes still in the owned PTY
 session. On the next start the sessions are back, and each one is started
 again when you first open it. Claude Code continues its known conversation,
 also after `/clear` or `/resume` changed it and its running metadata was
-read. Codex conversations chosen from the history continue by their explicit
-id. A newly started Codex session starts fresh after an app restart, since
-Codex exposes no running conversation id; codn does not infer one from files
-that another process might have created. Starting codn
+read. opencode continues the conversation its plugin named last, and
+without the plugin starts a new one. Codex conversations chosen from the
+history continue by their explicit id. A newly started Codex session starts
+fresh after an app restart, since Codex exposes no running conversation id;
+codn does not infer one from files that another process might have created. Starting codn
 while it is running opens no second window: the folders you name are added
 to the one that runs.
 
@@ -252,7 +288,7 @@ buttons = true              # false hides minimize, maximize and close
 
 # Naming agents says which there are and in which order. One that is not
 # named is not offered, nor is one whose command is not installed.
-# An agent named claude, codex or shell is the built-in one of that name:
+# An agent named claude, codex, opencode or shell is the built-in one of that name:
 # it keeps what you do not say, and what you say takes the place of what
 # is built in. Any other agent has nothing but what you say.
 [[agent]]
@@ -262,6 +298,9 @@ name = "claude"                    # as it is built in
 name = "codex"
 # What fills the bar along the bottom for Codex, see there.
 args = ["-c", 'notify=["/path/to/codn-app/mods/codn-codex/report.py", "{status}"]']
+
+[[agent]]
+name = "opencode"                  # its plugin is loaded by opencode, see the bar
 
 [[agent]]
 name = "shell"
@@ -306,7 +345,7 @@ the codn you run, so a model that is built in later is in its list.
 
 `icon` is one of sparkle, code, terminal, agent, robot, wand, star, chip,
 lightbulb and beaker: drawings that say what kind of program an agent is.
-Claude Code and Codex have the agent, a shell the terminal.
+Claude Code, Codex and opencode have the agent, a shell the terminal.
 
 `{id}` is a UUID codn generates per session. `{status}` is the file codn
 names to this start of the program, the one in `CODN_STATUS`, for an agent
@@ -322,13 +361,15 @@ choice applies until another is chosen, so one without arguments leaves
 the matter to the agent's own configuration. The built-in agents offer:
 for claude the model, the effort and the permission mode, for codex the
 model, the reasoning effort and the sandbox, as the two programs had them in
-October 2026. A model that came out since is one more choice in an option
+October 2026. opencode takes neither its model nor its agent as an argument,
+and offers nothing: both are chosen in the program, which remembers them. A model that came out since is one more choice in an option
 of your own. What you change inside a running session does not change
 what codn starts it with the next time. The bar along the bottom shows a
 model that the program reports, also one you changed to.
 
 `[agent.history]` tells codn how to find an agent's conversations, in files
-of JSON lines that the agent writes for itself. Nothing about any agent is
+of JSON lines that the agent writes for itself, or by asking the agent's own
+program for them where it keeps them in no such file. Nothing about any agent is
 built into the program beyond these defaults, so when an agent changes its
 files, or for another agent, the description is all there is to adapt:
 
@@ -341,8 +382,13 @@ files, or for another agent, the description is all there is to adapt:
 | `index` | A file with one line per conversation that is searched for titles first |
 | `only` | Keys and the values one of which a conversation must have. The default for Codex leaves out `codex exec` runs and subagents |
 | `running` | A file the running agent keeps about itself, `{pid}` being its process id, which names under `id` the conversation it is in |
+| `command` | In place of `files`: the arguments with which the agent's own command, run in the project folder, prints its conversations as a JSON list of objects, one to a conversation. The default for opencode is `["session", "list", "--standalone", "--format", "json", "--max-count", "200"]` |
+| `changed` | With `command`: the key whose value is when a conversation changed last, in milliseconds since 1970 |
 
-Keys are found at any depth of a line. With `running`, codn follows an agent
+Keys are found at any depth of a line, or of an object of what `command`
+prints. The command runs with the search path of the sessions, gets ten
+seconds and is read up to 4 MiB; what it prints to its error output is not
+read. With `running`, codn follows an agent
 that goes on to another conversation. Without it, as for Codex, only ids
 explicitly selected from history are known. No id is adopted from file
 creation times. Changes inside Codex, such as `/new` or `/resume`, cannot

@@ -560,6 +560,17 @@ mod tests {
     }
 
     #[test]
+    fn what_the_plugin_for_opencode_writes_is_read() {
+        // The text that mods/codn-opencode/tests/report.test.ts expects the
+        // plugin to write for a turn, from the file both tests read.
+        let usual = said(include_str!("../../mods/codn-opencode/tests/report.toml"));
+        assert_eq!(usual.runs().as_deref(), Some("big-pickle · build"));
+        assert_eq!((usual.tokens, usual.window, usual.speed), (Some(1_900), Some(200_000), Some(50)));
+        assert!(usual.limits.is_empty());
+        assert_eq!(usual.agents.get("ses_0a1b2c3d4e60NoPqRsTuVwXyZa").map(String::as_str), Some("Read HEAD"));
+    }
+
+    #[test]
     fn what_a_program_runs_with_follows_its_model() {
         let both = said("model = \"opus\"\noptions = [\"high\", \"think\"]\n");
         assert_eq!(both.runs().as_deref(), Some("opus · high · think"));

@@ -8,6 +8,26 @@ here for what changed in them.
 
 ## [Unreleased]
 
+## [0.3.1]
+
+opencode is an agent of codn, beside Claude Code and Codex: its earlier
+conversations are in the list that starts a session, and with its plugin
+the bar, the rows of its agents, its state and its conversation after a
+restart are there as they are for Claude Code.
+
+### Added
+
+- **opencode is an agent of codn**, beside Claude Code, Codex and a
+  shell: offered when it is installed, with its earlier conversations of
+  a project in the list that starts a session. A plugin for opencode in
+  `mods/codn-opencode` fills the bar along the bottom with its model, its
+  agent, the context and its speed, gives the agents it sends off their
+  rows below the session, says when it waits for a permission or an
+  answer, and lets a session continue its conversation after a restart.
+- **A history can be asked of the agent's own program** (`command` and
+  `changed` in `[agent.history]`), for an agent that keeps its
+  conversations where no file can be read.
+
 ### Changed
 
 - **The list that starts a session shows the five most recent
@@ -576,5 +596,6 @@ Wayland and on X11.
 - State is written atomically and readable only by its owner. Input, state,
   configuration, history and clipboard transfers have size limits.
 
-[Unreleased]: https://github.com/hoffmannroman/codn/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hoffmannroman/codn/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/hoffmannroman/codn/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/hoffmannroman/codn/releases/tag/v0.3.0

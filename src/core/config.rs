@@ -165,7 +165,7 @@ impl Default for Config {
             window: Window::default(),
             scrollback: 10_000,
             roots: vec!["~".into()],
-            agents: ["claude", "codex", "shell"].into_iter().filter_map(built_in).collect(),
+            agents: ["claude", "codex", "opencode", "shell"].into_iter().filter_map(built_in).collect(),
             error: None,
             path: None,
         }
@@ -216,8 +216,10 @@ fn option(name: &str, before: &[&str], values: &[&str]) -> Opt {
 // here. Not every model of Codex takes every effort; which does, Codex says
 // when it starts.
 //
-// The histories are what is known of the two agents' own files. They may
-// change them; a `[agent.history]` in the config file then says it anew.
+// The histories are what is known of the agents' own files, and for
+// opencode, which keeps its conversations in a database, of what its
+// program prints of them. They may change that; a `[agent.history]` in
+// the config file then says it anew.
 
 fn claude() -> Agent {
     Agent {
@@ -284,6 +286,34 @@ fn codex() -> Agent {
     }
 }
 
+// opencode 2.0 in October 2026. It takes no id of codn's for a new
+// conversation: one of another form than its own ends the free models'
+// answers. Which conversation a session is in, and so what it resumes, is
+// written by the plugin in `mods/codn-opencode`, where that is loaded. Its
+// model and agent are chosen in the program, which has no argument for
+// either. A session, and the list of its conversations, runs with a server
+// of its own, which ends with it. Without, opencode starts a background
+// service that all its sessions share and that outlives codn: it runs the
+// tools of every session with the environment of the one that started it,
+// `CODN_STATUS` among it.
+fn opencode() -> Agent {
+    Agent {
+        args: strings(&["--standalone"]),
+        resume: strings(&["--session", "{id}"]),
+        shift_enter: true,
+        history: Some(History {
+            command: strings(&["session", "list", "--standalone", "--format", "json", "--max-count", "200"]),
+            id: "id".into(),
+            folder: "directory".into(),
+            title: strings(&["title"]),
+            changed: "updated".into(),
+            running: "~/.local/state/codn-opencode/{pid}.json".into(),
+            ..History::default()
+        }),
+        ..builtin("opencode", "opencode", "oc", "agent")
+    }
+}
+
 fn shell() -> Agent {
     builtin("shell", &super::shell::name().unwrap_or_else(|| "/bin/sh".into()), "$", "terminal")
 }
@@ -293,6 +323,7 @@ fn built_in(name: &str) -> Option<Agent> {
     match name {
         "claude" => Some(claude()),
         "codex" => Some(codex()),
+        "opencode" => Some(opencode()),
         "shell" => Some(shell()),
         _ => None,
     }
@@ -556,6 +587,14 @@ mod tests {
         assert!(!defaults.agent("codex").unwrap().follows());
         assert_eq!(claude.arguments("u1", "", true, false, &none), ["--resume", "u1"], "codn chose the id");
         assert!(claude.resumable().is_some() && defaults.agent("shell").unwrap().resumable().is_none());
+        // opencode chooses its ids, and its plugin says which it is in.
+        let opencode = defaults.agent("opencode").unwrap();
+        assert!(opencode.follows() && opencode.resumable().is_some());
+        assert_eq!(opencode.arguments("u1", "", true, false, &none), ["--standalone"]);
+        assert_eq!(
+            opencode.arguments("ses_a", "", true, true, &none),
+            ["--standalone", "--session", "ses_a"]
+        );
         assert!(
             Config::parse("[[agent]]\nname = \"a\"\ncmd = \"a\"\n[agent.history]\nid = \"id\"\n").is_err()
         );
